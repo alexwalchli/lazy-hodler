@@ -1,8 +1,8 @@
 import {stub, spy} from 'sinon'
 import {expect} from 'chai'
 
-import {RebalanceExecution, executeRebalance} from '../../src/rebalancing'
-import * as rebalancing from '../../src/rebalancing'
+import {RebalanceExecution, executeRebalance} from '../../src/rebalance-execution'
+import * as rebalancing from '../../src/rebalance-execution'
 import * as exchangeService from '../../src/exchange-service'
 import { ProductID, Allocations } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';

@@ -1,0 +1,1 @@
+export const fiatIDs = ['USD', 'EUR']

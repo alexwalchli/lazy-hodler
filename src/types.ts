@@ -5,10 +5,14 @@ export type Passphrase = string
 export type ExchangeID = string
 export type CurrencyID = 'BTC' | 'USD' | 'USDT'
 export type ProductID = 'BTC-USD' | 'ETH-USD' | 'LTC-USD'
+export type ExchangeSymbol = 'BTC/USD' | 'ETH/USD' | 'LTC/USD'
 export type Quantity = number
 
 export type ProductTicker = {
   currentPrice: number
+}
+export type ProductTickers = {
+  [k: string]: ProductTicker
 }
 
 export type Position = {
@@ -21,9 +25,7 @@ export type Holdings = {
 }
 
 export type Portfolio = {
-  tickers: {
-    [k: string]: ProductTicker
-  }
+  tickers: ProductTickers,
   fxToBaseCurrency: {
     [k: string]: number
   },
