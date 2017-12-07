@@ -3,7 +3,7 @@ export type SecretKey = string
 export type APIKey = string
 export type Passphrase = string
 export type ExchangeID = string
-export type CurrencyID = 'BTC' | 'USD' | 'USDT'
+export type CurrencyID = 'BTC' | 'USD' | 'USDT' | 'LTC' | 'ETH' | 'GBP' | 'EUR'
 export type ProductID = 'BTC-USD' | 'ETH-USD' | 'LTC-USD'
 export type ExchangeSymbol = 'BTC/USD' | 'ETH/USD' | 'LTC/USD'
 export type Quantity = number
@@ -15,13 +15,13 @@ export type ProductTickers = {
   [k: string]: ProductTicker
 }
 
-export type Position = {
-  id: ProductID,
+export type Holding = {
+  id: CurrencyID,
   quantityAvailable: number
 }
 
 export type Holdings = {
-  [k: string]: Position
+  [k: string]: Holding
 }
 
 export type Portfolio = {
