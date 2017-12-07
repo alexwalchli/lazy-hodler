@@ -6,9 +6,11 @@ import {
   UserID,
   Allocations,
   ExchangeSymbol,
-  ProductTickers
+  ProductTickers,
+  ProductID
 } from "./types";
 import { fiatIDs } from './constants';
+import { buildExchangeClient } from "./exchange-client-factory";
 
 export const getAllocations = async (userID: UserID): Promise<Allocations> => {
   // TODO: Make a call to Firebase. Stubbed for now
@@ -21,21 +23,9 @@ export const getAllocations = async (userID: UserID): Promise<Allocations> => {
 }
 
 export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLive: Boolean = false): Promise<Portfolio> => {
+  const gdax = buildExchangeClient(exchangeAuthInfo, useLive)
   const allocations = await getAllocations(exchangeAuthInfo.userID)
   const tradeableCurrencies = getTradeableCurrencies(allocations)
-
-  // assume GDAX for now
-  const gdax = new ccxt.gdax({
-    apiKey: exchangeAuthInfo.authInfo.apiKey,
-    secret: exchangeAuthInfo.authInfo.secret,
-    password: exchangeAuthInfo.authInfo.passphrase
-  }) as any // TODO: Exchange class doesn't define urls in type def
-
-  // TODO: GDAX is the only exchange I know of that has a sandbox so this
-  // need to be removed or changed when more exchanges are supported
-  useLive
-    ? gdax.urls['api'] = 'https://api.gdax.com'
-    : gdax.urls['api'] = 'https://api-public.sandbox.gdax.com'
 
   const p: Portfolio = {
     baseCurrency: 'USD',
@@ -50,17 +40,21 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
   p.fxToBaseCurrency = await getFxRatesTo(p.baseCurrency, tradeableCurrencies)
 
   const markets = await gdax.loadMarkets()
+  console.log(markets)
   Object.keys(markets).forEach((s: ExchangeSymbol) => {
     const m: ccxt.Market = markets[s]
-    if (productHasAllocation(allocations, p.baseCurrency, s)) {
+    if (productHasAllocation(allocations, m.base as CurrencyID, m.quote as CurrencyID, p.baseCurrency)) {
       p.products[s] = {
+        id: m.id as ProductID,
+        base: m.base as CurrencyID,
+        quote: m.quote as CurrencyID,
+        symbol: m.symbol as ExchangeSymbol,
         minimumOrderSize: m.info.base_min_size 
       }
     }
   })
   
   const balances = await gdax.fetchBalance()
-
   Object.keys(balances.free).forEach((c: CurrencyID) => {
     const available = balances.free[c]
     p.holdings[c] = {
@@ -69,10 +63,7 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
     }
   })
 
-  console.log(p)
-
   return p
-
 }
 
 export const getFxRatesTo = (baseCurrency: CurrencyID, currencies: Array<CurrencyID>) =>
@@ -108,7 +99,10 @@ const getTradeableCurrencies = (a: Allocations): Array<CurrencyID> =>
 
 const isFiat = (c: CurrencyID) => fiatIDs.includes(c)
 
-// TODO: This will need to change for different exchanges
 // allocations contains the currency and it is denominated in the portfolio's base
-const productHasAllocation = (a: Allocations, b: CurrencyID, s: ExchangeSymbol) =>
-  a[s.split('/')[0]] && s.includes(b)
+const productHasAllocation = (
+  a: Allocations,
+  productBaseCurrency: CurrencyID,
+  productQuoteCurrency: CurrencyID,
+  portfolioBaseCurrency: CurrencyID
+) => a[productBaseCurrency] && productQuoteCurrency === portfolioBaseCurrency

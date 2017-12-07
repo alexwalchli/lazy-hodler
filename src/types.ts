@@ -40,6 +40,10 @@ export type Products = {
 }
 
 export type ProductInfo = {
+  id: ProductID,
+  symbol: ExchangeSymbol,
+  base: CurrencyID,
+  quote: CurrencyID,
   minimumOrderSize: Quantity
 }
 

@@ -8,7 +8,7 @@ describe('portfolio-calculator unit tests', () => {
     const mockPositionInfo = [
       { 
         productID: 'BTC-USD' as ProductID, currentPrice: 10000,
-        minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 1 
+        minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 1
       }
     ]
     const p = createMockPortfolio('USD', 'USD', mockPositionInfo)

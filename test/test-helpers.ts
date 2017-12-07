@@ -1,7 +1,7 @@
-import { Portfolio, ProductID, Quantity, CurrencyID } from "../src/types";
+import { Portfolio, ProductID, Quantity, CurrencyID, ExchangeSymbol } from "../src/types";
 
 export type MockPositionInfo = {
-  productID: ProductID,
+  currencyID: CurrencyID,
   currentPrice: number,
   quantityAvailable: Quantity,
   fxToBaseCurrency: number,
@@ -19,13 +19,19 @@ export const createMockPortfolio = (baseCurrency: CurrencyID, quoteCurrency: Cur
   }
 
   mockPositionInfo.forEach((pos) => {
-    p.holdings[pos.productID] = {
-      id: pos.productID,
+    p.holdings[pos.currencyID] = {
+      id: pos.currencyID,
       quantityAvailable: pos.quantityAvailable
     }
-    p.fxToBaseCurrency[pos.productID] = pos.fxToBaseCurrency
-    p.tickers[pos.productID] = { currentPrice: pos.currentPrice }
-    p.products[pos.productID] = { minimumOrderSize: pos.minimumOrderSize }
+    p.fxToBaseCurrency[pos.currencyID] = pos.fxToBaseCurrency
+    p.tickers[pos.currencyID] = { currentPrice: pos.currentPrice }
+    p.products[pos.currencyID] = {
+      id: `${pos.currencyID}-${baseCurrency}` as ProductID,
+      symbol: `${pos.currencyID}\${baseCurrency}` as ExchangeSymbol,
+      base: baseCurrency,
+      quote: pos.currencyID,
+      minimumOrderSize: pos.minimumOrderSize
+    }
   })
 
   return p
