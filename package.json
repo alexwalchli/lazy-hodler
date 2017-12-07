@@ -1,5 +1,5 @@
 {
-  "name": "lazyhodler-server",
+  "name": "lazyhodler",
   "version": "1.0.0",
   "description": "",
   "main": "\"\"",
@@ -7,21 +7,23 @@
     "test": "test"
   },
   "dependencies": {
-    "ccxt": "^1.10.282",
-    "chai": "^4.1.2",
-    "ts-mocha": "^1.0.3",
-    "ts-node": "^3.3.0",
-    "typescript-standard": "^0.3.30"
+    "ccxt": "^1.10.282"
   },
   "devDependencies": {
     "@types/sinon-chai": "^2.7.29",
     "mocha": "^4.0.1",
     "sinon": "^4.1.2",
-    "sinon-chai": "^2.14.0"
+    "sinon-chai": "^2.14.0",
+    "chai": "^4.1.2",
+    "ts-mocha": "^1.0.3",
+    "ts-node": "^3.3.0",
+    "typescript-standard": "^0.3.30"
   },
   "scripts": {
-    "test": "ts-mocha test/**/*.ts --exit"
+    "test": "ts-mocha test/**/*.ts --exit",
+    "integration": "ts-mocha test/integration/*.ts --exit",
+    "unit": "ts-mocha test/unit/*.ts --exit"
   },
-  "author": "",
+  "author": "Alex Walchli",
   "license": "ISC"
 }

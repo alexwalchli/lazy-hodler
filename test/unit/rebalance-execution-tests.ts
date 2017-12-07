@@ -4,7 +4,7 @@ import {expect} from 'chai'
 import {RebalanceExecution, executeRebalance} from '../../src/rebalance-execution'
 import * as rebalancing from '../../src/rebalance-execution'
 import * as exchangeService from '../../src/exchange-service'
-import { ProductID, Allocations } from '../../src/types';
+import { Allocations, CurrencyID } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';
 
 describe("rebalancing", () => {
@@ -13,112 +13,112 @@ describe("rebalancing", () => {
       it("evenly split allocations", () => {
         const mockPositionInfo = [
           { 
-            productID: 'BTC-USD' as ProductID, currentPrice: 10000,
+            currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
             minimumOrderSize: 0.0001, fxToBaseCurrency: 1, quantityAvailable: 2
           },
           { 
-            productID: 'ETH-USD' as ProductID, currentPrice: 400,
+            currencyID: 'ETH' as CurrencyID, currentPrice: 400,
             minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 25
           },
           { 
-            productID: 'LTC-USD' as ProductID, currentPrice: 100,
+            currencyID: 'LTC' as CurrencyID, currentPrice: 100,
             minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 100
           }
         ]
         const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
         const allocations: Allocations = {
-          'BTC-USD': 0.333333,
-          'LTC-USD': 0.333333,
-          'ETH-USD': 0.333333
+          'BTC': 0.333333,
+          'LTC': 0.333333,
+          'ETH': 0.333333
         }
 
         const adjustments = rebalancing.calculatePortfolioQuantityAdjustments(p, allocations);
 
-        expect(adjustments['BTC-USD']).to.be.equal(-0.6667)
-        expect(adjustments['ETH-USD']).to.be.equal(8.333)
-        expect(adjustments['LTC-USD']).to.be.equal(33.33)
+        expect(adjustments['BTC']).to.be.equal(-0.6667)
+        expect(adjustments['ETH']).to.be.equal(8.333)
+        expect(adjustments['LTC']).to.be.equal(33.33)
       })
       it("unevenly split allocations", () => {
         const mockPositionInfo = [
           { 
-            productID: 'BTC-USD' as ProductID, currentPrice: 10000,
+            currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
             minimumOrderSize: 0.0001, fxToBaseCurrency: 1, quantityAvailable: 1
           },
           { 
-            productID: 'ETH-USD' as ProductID, currentPrice: 400,
+            currencyID: 'ETH' as CurrencyID, currentPrice: 400,
             minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 20
           },
           { 
-            productID: 'LTC-USD' as ProductID, currentPrice: 90,
+            currencyID: 'LTC' as CurrencyID, currentPrice: 90,
             minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 100
           }
         ]
         const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
         const allocations: Allocations = {
-          'BTC-USD': 0.5,
-          'LTC-USD': 0.1,
-          'ETH-USD': 0.4
+          'BTC': 0.5,
+          'LTC': 0.1,
+          'ETH': 0.4
         }
 
         const adjustments = rebalancing.calculatePortfolioQuantityAdjustments(p, allocations)
         
-        expect(adjustments['BTC-USD']).to.equal(0.35)
-        expect(adjustments['ETH-USD']).to.equal(7)
-        expect(adjustments['LTC-USD']).to.equal(-70)
+        expect(adjustments['BTC']).to.equal(0.35)
+        expect(adjustments['ETH']).to.equal(7)
+        expect(adjustments['LTC']).to.equal(-70)
       })
     })
     describe("portfolio that does not need rebalancing", () => {
       it("evenly split allocations", () => {
         const mockPositionInfo = [
           { 
-            productID: 'BTC-USD' as ProductID, currentPrice: 10000,
+            currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
             minimumOrderSize: 0.0001, fxToBaseCurrency: 1, quantityAvailable: 1
           },
           { 
-            productID: 'ETH-USD' as ProductID, currentPrice: 400,
+            currencyID: 'ETH' as CurrencyID, currentPrice: 400,
             minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 25
           },
           { 
-            productID: 'LTC-USD' as ProductID, currentPrice: 90,
+            currencyID: 'LTC' as CurrencyID, currentPrice: 90,
             minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 111.11
           }
         ]
         const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
         const allocations: Allocations = {
-          'BTC-USD': 0.333333,
-          'LTC-USD': 0.333333,
-          'ETH-USD': 0.333333
+          'BTC': 0.333333,
+          'LTC': 0.333333,
+          'ETH': 0.333333
         }
 
         const adjustments = rebalancing.calculatePortfolioQuantityAdjustments(p, allocations);
 
-        expect(adjustments['BTC-USD']).to.be.equal(0)
-        expect(adjustments['ETH-USD']).to.be.equal(0)
-        expect(adjustments['LTC-USD']).to.be.equal(0)
+        expect(adjustments['BTC']).to.be.equal(0)
+        expect(adjustments['ETH']).to.be.equal(0)
+        expect(adjustments['LTC']).to.be.equal(0)
       })
     })
   })
   describe("createBuyAndSells", () => {
     const mockPositionInfo = [
       { 
-        productID: 'BTC-USD' as ProductID, currentPrice: 10000,
+        currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
         minimumOrderSize: 0.0001, fxToBaseCurrency: 1, quantityAvailable: 1
       },
       { 
-        productID: 'ETH-USD' as ProductID, currentPrice: 400,
+        currencyID: 'ETH' as CurrencyID, currentPrice: 400,
         minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 20
       },
       { 
-        productID: 'LTC-USD' as ProductID, currentPrice: 90,
+        currencyID: 'LTC' as CurrencyID, currentPrice: 90,
         minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 100
       }
     ]
     const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
   
     const allocations: Allocations = {
-      'BTC-USD': 0.5,
-      'LTC-USD': 0.1,
-      'ETH-USD': 0.4
+      'BTC': 0.5,
+      'LTC': 0.1,
+      'ETH': 0.4
     }
 
     const adjustments = rebalancing.calculatePortfolioQuantityAdjustments(p, allocations)
@@ -126,12 +126,12 @@ describe("rebalancing", () => {
 
     it("should create sell orders for positions that are over its allocation", () => {
       expect(orders.sellOrders.length).to.be.equal(1)
-      expect(orders.sellOrders['LTC-USD']).to.not.be.null
+      expect(orders.sellOrders['LTC']).to.not.be.null
     })
     it("should create buy orders for positions that are under its allocation", () => {
       expect(orders.buyOrders.length).to.be.equal(2)
-      expect(orders.sellOrders['BTC-USD']).to.not.be.null
-      expect(orders.sellOrders['ETH-USD']).to.not.be.null
+      expect(orders.sellOrders['BTC']).to.not.be.null
+      expect(orders.sellOrders['ETH']).to.not.be.null
     })
   })
   describe("executeRebalance", () => {

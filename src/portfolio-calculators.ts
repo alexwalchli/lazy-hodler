@@ -1,24 +1,24 @@
-import { Portfolio, ProductID, Allocations, Quantity } from "./types";
+import { Portfolio, ProductID, Allocations, Quantity, CurrencyID, ProductInfo } from "./types";
 
-export const convertToBalanceInBaseCurrency = (p: Portfolio, productID: ProductID, quantity: Quantity) =>
-  (p.fxToBaseCurrency[productID] * (p.tickers[productID].currentPrice * quantity))
+export const convertToBalanceInBaseCurrency = (p: Portfolio, currencyID: CurrencyID, quantity: Quantity) =>
+  (p.fxToBaseCurrency[currencyID] * (p.tickers[currencyID].currentPrice * quantity))
 
-export const desiredBalanceInBaseCurrency = (p: Portfolio, a: Allocations, productID: ProductID, totalPortfolioValueInBase: number) =>
-  (a[productID] * totalPortfolioValueInBase)
+export const desiredBalanceInBaseCurrency = (p: Portfolio, a: Allocations, currencyID: CurrencyID, totalPortfolioValueInBase: number) =>
+  (a[currencyID] * totalPortfolioValueInBase)
 
-export const quantityAdjustmentForRebalancing = (p: Portfolio, a: Allocations, productID: ProductID): Quantity => {
+export const quantityAdjustmentForRebalancing = (p: Portfolio, a: Allocations, currencyID: CurrencyID): Quantity => {
   const totalPortfolioValueInBase = calculateTotalPortfolioValueInBaseCurrency(p)
-  const desiredBalanceInBase = desiredBalanceInBaseCurrency(p, a, productID, totalPortfolioValueInBase)
-  const currentBalanceInBase = convertToBalanceInBaseCurrency(p, productID, p.holdings[productID].quantityAvailable);
-  const currentPriceInBase = p.tickers[productID].currentPrice * p.fxToBaseCurrency[productID]
+  const desiredBalanceInBase = desiredBalanceInBaseCurrency(p, a, currencyID, totalPortfolioValueInBase)
+  const currentBalanceInBase = convertToBalanceInBaseCurrency(p, currencyID, p.holdings[currencyID].quantityAvailable);
+  const currentPriceInBase = p.tickers[currencyID].currentPrice * p.fxToBaseCurrency[currencyID]
   let adjustment = (desiredBalanceInBase - currentBalanceInBase) / currentPriceInBase
-  adjustment = roundToMinimumOrderSize(p, productID, adjustment)
+  adjustment = roundToMinimumOrderSize(p, currencyID, adjustment)
 
   return adjustment
 }
 
-export const roundToMinimumOrderSize = (p: Portfolio, productID: ProductID, q: Quantity) => {
-  const minimumOrderSize = p.products[productID].minimumOrderSize
+export const roundToMinimumOrderSize = (p: Portfolio, currencyID: CurrencyID, q: Quantity) => {
+  const minimumOrderSize = getProductFrom(p, currencyID, p.baseCurrency).minimumOrderSize
   if (Math.abs(q) < minimumOrderSize) {
     q = 0
     return q
@@ -28,10 +28,14 @@ export const roundToMinimumOrderSize = (p: Portfolio, productID: ProductID, q: Q
 }
 
 export const calculateTotalPortfolioValueInBaseCurrency = (p: Portfolio) => (
-  Object.keys(p.holdings).reduce((total: number, productID: ProductID) => {
-    return total + convertToBalanceInBaseCurrency(p, productID, p.holdings[productID].quantityAvailable)
+  Object.keys(p.holdings).reduce((total: number, currencyID: CurrencyID) => {
+    return total + convertToBalanceInBaseCurrency(p, currencyID, p.holdings[currencyID].quantityAvailable)
   }, 0)
 )
+
+const getProductFrom = (p: Portfolio, quote: CurrencyID, base: CurrencyID) => 
+  Object.keys(p.products).map((pID: ProductID) => p.products[pID])
+    .find((product: ProductInfo) => product.base === base && product.quote === quote)
 
 const decimalPlaces = (n: number) => {
   const strNumber = n.toString()

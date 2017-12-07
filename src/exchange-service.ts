@@ -75,13 +75,13 @@ export const getFxRatesTo = (baseCurrency: CurrencyID, currencies: Array<Currenc
 
 export const getTickers = async (currencies: Array<CurrencyID>, baseCurrency: CurrencyID, exchangeClient: ccxt.Exchange): Promise<ProductTickers> => {  
   const tickers: ProductTickers = {}
-  for (const s of currencies) {
+  for (const c of currencies) {
     // TODO: Exchanges may be format symbols differently so this will have to change
     // to support more exchanges 
-    const exchangeSymbol = `${s}/${baseCurrency}` 
+    const exchangeSymbol = `${c}/${baseCurrency}` 
     // Some exchanges like GDAX don't support getting multiple tickers
     const exchangeTicker = await exchangeClient.fetchTicker(exchangeSymbol)
-    tickers[s] = { currentPrice: exchangeTicker.last }
+    tickers[c] = { currentPrice: exchangeTicker.last }
   }
 
   return tickers
