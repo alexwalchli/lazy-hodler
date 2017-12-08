@@ -33,9 +33,9 @@ export const calculateTotalPortfolioValueInBaseCurrency = (p: Portfolio) => (
   }, 0)
 )
 
-const getProductFrom = (p: Portfolio, quote: CurrencyID, base: CurrencyID) => 
+const getProductFrom = (p: Portfolio, productBase: CurrencyID, productQuote: CurrencyID) => 
   Object.keys(p.products).map((pID: ProductID) => p.products[pID])
-    .find((product: ProductInfo) => product.base === base && product.quote === quote)
+    .find((product: ProductInfo) => product.base === productBase && product.quote === productQuote)
 
 const decimalPlaces = (n: number) => {
   const strNumber = n.toString()

@@ -27,9 +27,9 @@ export const createMockPortfolio = (baseCurrency: CurrencyID, quoteCurrency: Cur
     p.tickers[pos.currencyID] = { currentPrice: pos.currentPrice }
     p.products[pos.currencyID] = {
       id: `${pos.currencyID}-${baseCurrency}` as ProductID,
-      symbol: `${pos.currencyID}\${baseCurrency}` as ExchangeSymbol,
-      base: baseCurrency,
-      quote: pos.currencyID,
+      symbol: `${pos.currencyID}\/${baseCurrency}` as ExchangeSymbol,
+      base: pos.currencyID,
+      quote: baseCurrency,
       minimumOrderSize: pos.minimumOrderSize
     }
   })

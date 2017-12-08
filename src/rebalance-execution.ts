@@ -1,5 +1,11 @@
 import * as exchangeService from './exchange-service'
-import { CurrencyID, Allocations, QuantityAdjustments, UserExchangeAuthData, Portfolio, ProductID } from './types';
+import { 
+  CurrencyID,
+  Allocations,
+  QuantityAdjustments,
+  UserExchangeAuthData,
+  Portfolio
+} from './types';
 import * as portfolioCalculators from './portfolio-calculators'
 
 
@@ -54,8 +60,8 @@ export const calculatePortfolioQuantityAdjustments = (
   p: Portfolio,
   a: Allocations
 ): QuantityAdjustments  => (
-  Object.keys(p.holdings).reduce((quantityAdjustments: QuantityAdjustments, productID: ProductID) => {
-    quantityAdjustments[productID] = portfolioCalculators.quantityAdjustmentForRebalancing(p, a, productID)
+  Object.keys(p.holdings).reduce((quantityAdjustments: QuantityAdjustments, currencyID: CurrencyID) => {
+    quantityAdjustments[currencyID] = portfolioCalculators.quantityAdjustmentForRebalancing(p, a, currencyID)
     return quantityAdjustments
   }, {})
 )
