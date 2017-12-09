@@ -1,4 +1,4 @@
-import * as exchangeService from './exchange-service'
+import * as portfolioService from './portfolio-service'
 import { 
   CurrencyID,
   Allocations,
@@ -24,11 +24,11 @@ export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdj
     const adjustment = quantityAdjustments[currencyID]
     if (adjustment < 0) {
       re.sellOrders.push(
-        () => { return exchangeService.sellAtMarket(holding.id as CurrencyID, adjustment); }
+        () => { return portfolioService.sellAtMarket(holding.id as CurrencyID, adjustment); }
       );
     } else if (adjustment > 0) {
       re.buyOrders.push(
-        () => { return exchangeService.buyAtMarket(holding.id as CurrencyID, adjustment); }
+        () => { return portfolioService.buyAtMarket(holding.id as CurrencyID, adjustment); }
       );
     }
   })
@@ -49,7 +49,7 @@ export const executeRebalance = async (re: RebalanceExecution): Promise<Boolean>
 
 export const maybeRebalancePortfolio = (exchangeAuthInfo: UserExchangeAuthData, allocations: Allocations) => {
   // TODO: better error handling and promise handling
-  return exchangeService.getPortfolio(exchangeAuthInfo)
+  return portfolioService.getPortfolio(exchangeAuthInfo)
     .then((p: Portfolio) => {
       const quantityAdjustments = calculatePortfolioQuantityAdjustments(p, allocations)
       const orders = createBuyAndSells(p, quantityAdjustments)

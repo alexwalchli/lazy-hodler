@@ -1,7 +1,7 @@
 import {stub} from 'sinon'
 // import {expect} from 'chai'
 
-import * as exchangeService from '../../src/exchange-service'
+import * as portfolioService from '../../src/portfolio-service'
 import * as rebalanceExecution from '../../src/rebalance-execution'
 import { Allocations, UserExchangeAuthData, Portfolio } from '../../src/types';
 import { expect } from 'chai';
@@ -43,11 +43,11 @@ describe('rebalance-execution integration', () => {
   }
   describe('with rebalancing calculations and placing correct orders', () => { 
     it('should retrieve a portfolio and use specified allocations to execute a rebalance', (done) => {
-      const getPortfolio = stub(exchangeService, 'getPortfolio')
+      const getPortfolio = stub(portfolioService, 'getPortfolio')
         .returns(Promise.resolve(portfolio))
-      const sellAtMarket = stub(exchangeService, 'sellAtMarket')
+      const sellAtMarket = stub(portfolioService, 'sellAtMarket')
         .returns(Promise.resolve(true))
-      const buyAtMarket = stub(exchangeService, 'buyAtMarket')
+      const buyAtMarket = stub(portfolioService, 'buyAtMarket')
         .returns(Promise.resolve(true))
 
       rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then(() => {

@@ -1,8 +1,8 @@
-import * as exchangeService from '../../src/exchange-service'
+import * as exchangeService from '../../src/portfolio-service'
 import {exchangeAuthData} from '../../exclude/exchange-auth-data'
 import { expect } from 'chai';
 
-describe('exchange-service integrates with exchanges over HTTP', () => {
+describe('portfolio-service integrates with exchanges over HTTP', () => {
   describe('getPortfolio', () => {
     it('should retrieve portfolio data', async () => {
       const p = await exchangeService.getPortfolio(exchangeAuthData.sandbox.gdax);
