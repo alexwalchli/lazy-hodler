@@ -36,24 +36,25 @@ export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdj
   return re
 }
 
-export const executeRebalance = (re: RebalanceExecution): Promise<Boolean> => {
+export const executeRebalance = async (re: RebalanceExecution): Promise<Boolean> => {
   // execute sells first so we have a balance to buy underachievers with
-  return Promise.all(re.sellOrders.map(s => s()))
-    .then((responses) => {
-      return Promise.all(re.buyOrders.map(b => b()))
-        .then((responses) => {
-          return true;
-        })
-    })
+  for (let sell of re.sellOrders) {
+    await sell()
+  }
+  for (let buy of re.buyOrders) {
+    await buy()
+  }
+  return true
 }
 
 export const maybeRebalancePortfolio = (exchangeAuthInfo: UserExchangeAuthData, allocations: Allocations) => {
-  exchangeService.getPortfolio(exchangeAuthInfo)
+  // TODO: better error handling and promise handling
+  return exchangeService.getPortfolio(exchangeAuthInfo)
     .then((p: Portfolio) => {
       const quantityAdjustments = calculatePortfolioQuantityAdjustments(p, allocations)
       const orders = createBuyAndSells(p, quantityAdjustments)
-      executeRebalance(orders)
-    })
+      executeRebalance(orders).then(() => Promise.resolve(true))
+    }).catch(() => Promise.resolve(false))
 }
 
 export const calculatePortfolioQuantityAdjustments = (

@@ -1,10 +1,9 @@
 
-import {stub, spy} from 'sinon'
+import {spy} from 'sinon'
 import {expect} from 'chai'
 
 import {RebalanceExecution, executeRebalance} from '../../src/rebalance-execution'
 import * as rebalancing from '../../src/rebalance-execution'
-import * as exchangeService from '../../src/exchange-service'
 import { Allocations, CurrencyID } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';
 
@@ -136,12 +135,7 @@ describe("rebalancing", () => {
     })
   })
   describe("executeRebalance", () => {
-    
     it("should execute sell orders first then buy orders", (done) => {
-      const sellAtMarketStub = stub(exchangeService, 'sellAtMarket')
-        .returns(Promise.resolve(true))
-      const buyAtMarketStub = stub(exchangeService, 'buyAtMarket')
-        .returns(Promise.resolve(true))
       const sellOrder1 = spy(() => Promise.resolve(true))
       const sellOrder2 = spy(() => Promise.resolve(true))
       const buyOrder1 = spy(() => Promise.resolve(true))
@@ -166,9 +160,9 @@ describe("rebalancing", () => {
         expect(buyOrder2).to.be.called
         done()
       })
-
-      sellAtMarketStub.restore()
-      buyAtMarketStub.restore()
+    })
+    it('should gracefully handle order execution errors', () => {
+      throw new Error('not implemented')
     })
   })
 })

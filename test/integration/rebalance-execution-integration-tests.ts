@@ -4,6 +4,7 @@ import {stub} from 'sinon'
 import * as exchangeService from '../../src/exchange-service'
 import * as rebalanceExecution from '../../src/rebalance-execution'
 import { Allocations, UserExchangeAuthData, Portfolio } from '../../src/types';
+import { expect } from 'chai';
 
 describe('rebalance-execution integration', () => {
   const fakeExchangeAuthData: UserExchangeAuthData = {
@@ -40,25 +41,29 @@ describe('rebalance-execution integration', () => {
       'LTC': 1
     }
   }
-  let getPortfolio
-  let sellAtMarket
-  let buyAtMarket
-  beforeEach(() => {
-    getPortfolio = stub(exchangeService, 'getPortfolio')
-      .returns(Promise.resolve(portfolio))
-    sellAtMarket = stub(exchangeService, 'sellAtMarket')
-      .returns(Promise.resolve(true))
-    buyAtMarket = stub(exchangeService, 'buyAtMarket')
-      .returns(Promise.resolve(true))
-  })
-  describe('with rebalancing calculations and placing correct orders', () => {
-    it('should retrieve a portfolio and use specified allocations to execute a rebalance', () => {
-      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations)
+  describe('with rebalancing calculations and placing correct orders', () => { 
+    it('should retrieve a portfolio and use specified allocations to execute a rebalance', (done) => {
+      const getPortfolio = stub(exchangeService, 'getPortfolio')
+        .returns(Promise.resolve(portfolio))
+      const sellAtMarket = stub(exchangeService, 'sellAtMarket')
+        .returns(Promise.resolve(true))
+      const buyAtMarket = stub(exchangeService, 'buyAtMarket')
+        .returns(Promise.resolve(true))
+
+      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then(() => {
+        // TODO: Add deeper expectations
+        expect(buyAtMarket).to.be.called
+        expect(sellAtMarket).to.be.called
+  
+        getPortfolio.restore()
+        sellAtMarket.restore()
+        buyAtMarket.restore()
+
+        done()
+      })
     })
-  })
-  afterEach(() => {
-    getPortfolio.restore()
-    sellAtMarket.restore()
-    buyAtMarket.restore()
+    it('should handle exceptions', () => {
+      throw new Error('not implemented')
+    })
   })
 })
