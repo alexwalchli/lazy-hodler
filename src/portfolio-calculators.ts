@@ -33,7 +33,7 @@ export const calculateTotalPortfolioValueInBaseCurrency = (p: Portfolio) => (
   }, 0)
 )
 
-const getProductFrom = (p: Portfolio, productBase: CurrencyID, productQuote: CurrencyID) => 
+export const getProductFrom = (p: Portfolio, productBase: CurrencyID, productQuote: CurrencyID) => 
   Object.keys(p.products).map((pID: ProductID) => p.products[pID])
     .find((product: ProductInfo) => product.base === productBase && product.quote === productQuote)
 

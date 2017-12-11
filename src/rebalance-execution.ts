@@ -1,4 +1,5 @@
 import * as portfolioService from './portfolio-service'
+import * as orderExecution from './order-execution'
 import { 
   CurrencyID,
   Allocations,
@@ -15,20 +16,25 @@ export type RebalanceExecution = {
 }
 
 export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdjustments) => {
+  // IMPORTANT TODO: This should be smarter.
+  // For example if we need more ETH and less BTC. We should just buy ETH with 
+  // ETH/BTC(selling BTC for more ETH) instead of selling ETH to USD and then buying
+  // BTC with the new USD
+
   const re: RebalanceExecution = {
     sellOrders: [],
     buyOrders: [] 
   }
   Object.keys(p.holdings).forEach((currencyID: CurrencyID) => {
-    const holding = p.holdings[currencyID]
     const adjustment = quantityAdjustments[currencyID]
+    const product = portfolioCalculators.getProductFrom(p, currencyID, p.baseCurrency)
     if (adjustment < 0) {
       re.sellOrders.push(
-        () => { return portfolioService.sellAtMarket(holding.id as CurrencyID, adjustment); }
+        () => { return orderExecution.sellAtMarket(product.symbol, adjustment); }
       );
     } else if (adjustment > 0) {
       re.buyOrders.push(
-        () => { return portfolioService.buyAtMarket(holding.id as CurrencyID, adjustment); }
+        () => { return orderExecution.buyAtMarket(product.symbol, adjustment); }
       );
     }
   })

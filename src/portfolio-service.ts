@@ -87,13 +87,6 @@ export const getTickers = async (currencies: Array<CurrencyID>, baseCurrency: Cu
   return tickers
 }
 
-export const sellAtMarket = (c: CurrencyID, qty: number): Promise<Boolean> => {
-  return Promise.resolve(true);
-}
-export const buyAtMarket = (c: CurrencyID, qty: number): Promise<Boolean> => {
-  return Promise.resolve(true);
-}
-
 const getTradeableCurrencies = (a: Allocations): Array<CurrencyID> =>
   Object.keys(a).filter((c: CurrencyID) => !isFiat(c)) as Array<CurrencyID>
 

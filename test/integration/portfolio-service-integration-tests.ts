@@ -1,11 +1,11 @@
-import * as exchangeService from '../../src/portfolio-service'
+import * as portfolioService from '../../src/portfolio-service'
 import {exchangeAuthData} from '../../exclude/exchange-auth-data'
 import { expect } from 'chai';
 
 describe('portfolio-service integrates with exchanges over HTTP', () => {
   describe('getPortfolio', () => {
     it('should retrieve portfolio data', async () => {
-      const p = await exchangeService.getPortfolio(exchangeAuthData.sandbox.gdax);
+      const p = await portfolioService.getPortfolio(exchangeAuthData.sandbox.gdax);
 
       expect(p.baseCurrency).to.equal('USD', 'only supporting USD base at the moment')
       expect(p.quoteCurrency).to.equal('USD', 'only supporting USD quote at the moment')

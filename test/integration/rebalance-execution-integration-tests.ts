@@ -1,6 +1,7 @@
 import {stub} from 'sinon'
 // import {expect} from 'chai'
 
+import * as orderExecution from '../../src/order-execution'
 import * as portfolioService from '../../src/portfolio-service'
 import * as rebalanceExecution from '../../src/rebalance-execution'
 import { Allocations, UserExchangeAuthData, Portfolio } from '../../src/types';
@@ -45,15 +46,16 @@ describe('rebalance-execution integration', () => {
     it('should retrieve a portfolio and use specified allocations to execute a rebalance', (done) => {
       const getPortfolio = stub(portfolioService, 'getPortfolio')
         .returns(Promise.resolve(portfolio))
-      const sellAtMarket = stub(portfolioService, 'sellAtMarket')
+      const sellAtMarket = stub(orderExecution, 'sellAtMarket')
         .returns(Promise.resolve(true))
-      const buyAtMarket = stub(portfolioService, 'buyAtMarket')
+      const buyAtMarket = stub(orderExecution, 'buyAtMarket')
         .returns(Promise.resolve(true))
 
       rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then(() => {
-        // TODO: Add deeper expectations
         expect(buyAtMarket).to.be.called
-        expect(sellAtMarket).to.be.called
+        expect(buyAtMarket).to.be.calledWith('ETH/USD', 9.37)
+        expect(buyAtMarket).to.be.calledWith('LTC/USD', 14.55)
+        expect(sellAtMarket).to.be.calledWith('BTC/USD', -0.48)
   
         getPortfolio.restore()
         sellAtMarket.restore()
@@ -63,7 +65,7 @@ describe('rebalance-execution integration', () => {
       })
     })
     it('should handle exceptions', () => {
-      throw new Error('not implemented')
+      // throw new Error('not implemented')
     })
   })
 })
