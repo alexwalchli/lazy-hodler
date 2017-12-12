@@ -24,7 +24,7 @@ describe('portfolio-service integrates with exchanges over HTTP', () => {
         )
       })
 
-      expect(Object.keys(p.products).length).to.equal(3, 'should only contain allocated currencies')
+      expect(Object.keys(p.products).length).to.equal(9, 'should contain all products(9 for GDAX)')
       Object.keys(p.products).forEach((productID) => {
         expect(Number.isNaN(p.products[productID].minimumOrderSize)).to.be.false
       })

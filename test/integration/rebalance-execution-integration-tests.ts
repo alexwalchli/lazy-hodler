@@ -3,7 +3,7 @@ import {stub} from 'sinon'
 
 import * as orderExecution from '../../src/order-execution'
 import * as portfolioService from '../../src/portfolio-service'
-import * as rebalanceExecution from '../../src/rebalance-execution'
+import * as rebalanceExecution from '../../src/bot/rebalance-execution'
 import { Allocations, UserExchangeAuthData, Portfolio } from '../../src/types';
 import { expect } from 'chai';
 

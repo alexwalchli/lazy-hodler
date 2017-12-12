@@ -1,14 +1,14 @@
-import * as portfolioService from './portfolio-service'
-import * as orderExecution from './order-execution'
+import * as portfolioService from '../portfolio-service'
+import * as orderExecution from '../order-execution'
 import { 
   CurrencyID,
   Allocations,
   QuantityAdjustments,
   UserExchangeAuthData,
   Portfolio
-} from './types';
-import * as portfolioCalculators from './portfolio-calculators'
-import { getProductFrom } from './currency-functions'
+} from '../types';
+import * as portfolioCalculators from '../portfolio-calculators'
+import { getProductFrom } from '../currency-functions'
 
 
 export type RebalanceExecution = {

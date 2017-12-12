@@ -2,8 +2,8 @@
 import {spy} from 'sinon'
 import {expect} from 'chai'
 
-import {RebalanceExecution, executeRebalance} from '../../src/rebalance-execution'
-import * as rebalancing from '../../src/rebalance-execution'
+import {RebalanceExecution, executeRebalance} from '../../src/bot/rebalance-execution'
+import * as rebalancing from '../../src/bot/rebalance-execution'
 import { Allocations, CurrencyID } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';
 
