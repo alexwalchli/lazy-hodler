@@ -43,29 +43,55 @@ describe('rebalance-execution integration', () => {
     }
   }
   describe('with rebalancing calculations and placing correct orders', () => { 
+    let getPortfolio
+    let sellAtMarket
+    let buyAtMarket
+    afterEach(() => {
+      getPortfolio.restore()
+      sellAtMarket.restore()
+      buyAtMarket.restore()
+    })
     it('should retrieve a portfolio and use specified allocations to execute a rebalance', (done) => {
-      const getPortfolio = stub(portfolioService, 'getPortfolio')
+      getPortfolio = stub(portfolioService, 'getPortfolio')
         .returns(Promise.resolve(portfolio))
-      const sellAtMarket = stub(orderExecution, 'sellAtMarket')
+      sellAtMarket = stub(orderExecution, 'sellAtMarket')
         .returns(Promise.resolve(true))
-      const buyAtMarket = stub(orderExecution, 'buyAtMarket')
+      buyAtMarket = stub(orderExecution, 'buyAtMarket')
         .returns(Promise.resolve(true))
 
-      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then(() => {
+      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then((result) => {
         expect(buyAtMarket).to.be.called
         expect(buyAtMarket).to.be.calledWith('ETH/USD', 9.37)
         expect(buyAtMarket).to.be.calledWith('LTC/USD', 14.55)
         expect(sellAtMarket).to.be.calledWith('BTC/USD', -0.48)
-  
-        getPortfolio.restore()
-        sellAtMarket.restore()
-        buyAtMarket.restore()
+        expect(result).to.be.true
+        done()
+      })
+    })
+    it('should handle an exchange error, halt rebalancing and return false', (done) => {
+      getPortfolio = stub(portfolioService, 'getPortfolio')
+        .returns(Promise.resolve(portfolio))
+      sellAtMarket = stub(orderExecution, 'sellAtMarket')
+        .returns(Promise.resolve(true))
+      buyAtMarket = stub(orderExecution, 'buyAtMarket').throws('error at exchange')
+
+      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then((result) => {
+        expect(sellAtMarket).to.be.calledOnce
+        expect(buyAtMarket).to.be.calledOnce
+
+        expect(result).to.be.false
 
         done()
       })
     })
-    it('should handle exceptions', () => {
-      // throw new Error('not implemented')
+    it('should catch non-exchange errors and return false', (done) => {
+      getPortfolio = stub(portfolioService, 'getPortfolio')
+        .throws("some error")
+
+      rebalanceExecution.maybeRebalancePortfolio(fakeExchangeAuthData, allocations).then((result) => {
+        expect(result).to.be.false
+        done()
+      })
     })
   })
 })
