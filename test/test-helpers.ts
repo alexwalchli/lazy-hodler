@@ -8,7 +8,12 @@ export type MockPositionInfo = {
   minimumOrderSize: Quantity
 }
 
-export const createMockPortfolio = (baseCurrency: CurrencyID, quoteCurrency: CurrencyID, mockPositionInfo: Array<MockPositionInfo>): Portfolio => {
+export const createMockPortfolio = (
+  baseCurrency: CurrencyID,
+  quoteCurrency: CurrencyID,
+  mockPositionInfo: Array<MockPositionInfo>,
+  baseCurrencyAmount: number = 0
+): Portfolio => {
   const p: Portfolio = {
     holdings: {},
     tickers: {},
@@ -17,6 +22,13 @@ export const createMockPortfolio = (baseCurrency: CurrencyID, quoteCurrency: Cur
     quoteCurrency: baseCurrency,
     baseCurrency: quoteCurrency
   }
+
+  p.holdings[baseCurrency] = {
+    id: baseCurrency,
+    quantityAvailable: baseCurrencyAmount
+  }
+
+  p.fxToBaseCurrency[baseCurrency] = 1
 
   mockPositionInfo.forEach((pos) => {
     p.holdings[pos.currencyID] = {

@@ -4,32 +4,6 @@ import { expect } from 'chai';
 import { createMockPortfolio } from '../test-helpers'
 
 describe('portfolio-calculator unit tests', () => {
-  describe('roundToMinimumOrderSize', () => {
-    const mockPositionInfo = [
-      { 
-        currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
-        minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 1
-      }
-    ]
-    const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
-
-    it('should round a quantity smaller than the minimum tradable size to 0', () => {
-      const quantity = portfolioCalculators.roundToMinimumOrderSize(p, 'BTC', 0.0001)
-      expect(quantity).to.equal(0)
-    })
-    it('should round down a quantity with a smaller decimal than the minimum tradable size', () => {
-      const quantity = portfolioCalculators.roundToMinimumOrderSize(p, 'BTC', 10.0001)
-      expect(quantity).to.equal(10)
-    })
-    it('should round up a quantity', () => {
-      const quantity = portfolioCalculators.roundToMinimumOrderSize(p, 'BTC', 10.0009)
-      expect(quantity).to.equal(10.001)
-    })
-    it('should not round if the quantity is above the minimum size', () => {
-      const quantity = portfolioCalculators.roundToMinimumOrderSize(p, 'BTC', 10.1)
-      expect(quantity).to.equal(10.1)
-    })
-  })
   describe('desiredBalanceInBaseCurrency', () => {
     it('should use the allocations and current total portfolio balance to determine new desired balnce', () => {
       const p: Portfolio = {
@@ -51,25 +25,24 @@ describe('portfolio-calculator unit tests', () => {
       expect(desiredBtcBalance).to.be.equal(5000)
       expect(desiredEthBalance).to.be.equal(2500)
     })
-  })
-  describe('convertToBalanceInBaseCurrency', () => {
-    it('should use the fxToBaseCurrency rate and quantity to determine the balance in base', () => {
+    it('base currency should not convert', () => {
       const p: Portfolio = {
         holdings: {},
         products: {},
-        tickers: {
-          'BTC': { currentPrice: 11500 }
-        },
-        fxToBaseCurrency: {
-          'BTC': 1
-        },
+        tickers: {},
+        fxToBaseCurrency: {},
         baseCurrency: 'USD',
         quoteCurrency: 'USD'
       }
+      const a: Allocations = {
+        'BTC': 0.5,
+        'ETH': 0.25,
+        'USD': 0.25
+      }
 
-      const balanceInBase = portfolioCalculators.convertToBalanceInBaseCurrency(p, 'BTC', 2)
+      const desiredUsdBalance = portfolioCalculators.desiredBalanceInBaseCurrency(p, a, 'USD', 10000)
 
-      expect(balanceInBase).to.equal(23000)
+      expect(desiredUsdBalance).to.be.equal(2500)
     })
   })
   describe('quantityAdjustmentForRebalancing', () => {
@@ -142,6 +115,34 @@ describe('portfolio-calculator unit tests', () => {
       expect(ethAdjustment).to.equal(0, 'ETH should need no adjustment')
       expect(btcAdjustment).to.equal(0, 'BTC should need no adjustment')
     })
+    describe('when allocations contain fiat', () => {
+      it('should adjust correctly', () => {
+        const mockPositionInfo1 = [
+          { 
+            currencyID: 'BTC' as CurrencyID, currentPrice: 10000,
+            minimumOrderSize: 0.001, fxToBaseCurrency: 1, quantityAvailable: 1
+          },
+          { 
+            currencyID: 'ETH' as CurrencyID, currentPrice: 500,
+            minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 25
+          }
+        ]
+        const p1 = createMockPortfolio('USD', 'USD', mockPositionInfo1, 2000)
+        const a1: Allocations = {
+          'BTC': .4,
+          'ETH': .4,
+          'USD': .2
+        }
+  
+        const ethAdjustment = portfolioCalculators.quantityAdjustmentForRebalancing(p1, a1, 'ETH')
+        const btcAdjustment = portfolioCalculators.quantityAdjustmentForRebalancing(p1, a1, 'BTC')
+        const usdAdjustment = portfolioCalculators.quantityAdjustmentForRebalancing(p1, a1, 'USD')
+  
+        expect(ethAdjustment).to.equal(-5.4)
+        expect(btcAdjustment).to.equal(-0.02)
+        expect(usdAdjustment).to.equal(2900)
+      })
+    })
   })
   describe('calculateTotalPortfolioValueInBaseCurrency', () => {
     it('should convert each position balance to base currency and add them up', () => {
@@ -159,11 +160,11 @@ describe('portfolio-calculator unit tests', () => {
           minimumOrderSize: 0.01, fxToBaseCurrency: 1, quantityAvailable: 50
         }
       ]
-      const p1 = createMockPortfolio('USD', 'USD', mockPositionInfo1)
+      const p1 = createMockPortfolio('USD', 'USD', mockPositionInfo1, 10000)
 
       const totalValue = portfolioCalculators.calculateTotalPortfolioValueInBaseCurrency(p1)
 
-      expect(totalValue).to.equal(30000)
+      expect(totalValue).to.equal(40000)
     })
   })
 })

@@ -1,7 +1,5 @@
-import { Portfolio, ProductID, Allocations, Quantity, CurrencyID, ProductInfo } from "./types";
-
-export const convertToBalanceInBaseCurrency = (p: Portfolio, currencyID: CurrencyID, quantity: Quantity) =>
-  (p.fxToBaseCurrency[currencyID] * (p.tickers[currencyID].currentPrice * quantity))
+import { Portfolio, Allocations, Quantity, CurrencyID } from "./types";
+import { convertToBalanceInBaseCurrency, roundToMinimumOrderSize, getCurrentPriceInBase } from "./currency-functions";
 
 export const desiredBalanceInBaseCurrency = (p: Portfolio, a: Allocations, currencyID: CurrencyID, totalPortfolioValueInBase: number) =>
   (a[currencyID] * totalPortfolioValueInBase)
@@ -10,22 +8,13 @@ export const quantityAdjustmentForRebalancing = (p: Portfolio, a: Allocations, c
   const totalPortfolioValueInBase = calculateTotalPortfolioValueInBaseCurrency(p)
   const desiredBalanceInBase = desiredBalanceInBaseCurrency(p, a, currencyID, totalPortfolioValueInBase)
   const currentBalanceInBase = convertToBalanceInBaseCurrency(p, currencyID, p.holdings[currencyID].quantityAvailable);
-  const currentPriceInBase = p.tickers[currencyID].currentPrice * p.fxToBaseCurrency[currencyID]
+  const currentPriceInBase = getCurrentPriceInBase(p, currencyID)
   let adjustment = (desiredBalanceInBase - currentBalanceInBase) / currentPriceInBase
   adjustment = roundToMinimumOrderSize(p, currencyID, adjustment)
 
   return adjustment
 }
 
-export const roundToMinimumOrderSize = (p: Portfolio, currencyID: CurrencyID, q: Quantity) => {
-  const minimumOrderSize = getProductFrom(p, currencyID, p.baseCurrency).minimumOrderSize
-  if (Math.abs(q) < minimumOrderSize) {
-    q = 0
-    return q
-  }
-  q = +q.toFixed(decimalPlaces(minimumOrderSize))
-  return q
-}
 
 export const calculateTotalPortfolioValueInBaseCurrency = (p: Portfolio) => (
   Object.keys(p.holdings).reduce((total: number, currencyID: CurrencyID) => {
@@ -33,18 +22,4 @@ export const calculateTotalPortfolioValueInBaseCurrency = (p: Portfolio) => (
   }, 0)
 )
 
-export const getProductFrom = (p: Portfolio, productBase: CurrencyID, productQuote: CurrencyID) => 
-  Object.keys(p.products).map((pID: ProductID) => p.products[pID])
-    .find((product: ProductInfo) => product.base === productBase && product.quote === productQuote)
 
-const decimalPlaces = (n: number) => {
-  const strNumber = n.toString()
-  var match = (''+strNumber).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
-  if (!match) { return 0; }
-  return Math.max(
-       0,
-       // Number of digits right of decimal point.
-       (match[1] ? match[1].length : 0)
-       // Adjust for scientific notation.
-       - (match[2] ? +match[2] : 0))
-}

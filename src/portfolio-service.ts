@@ -9,8 +9,8 @@ import {
   ProductTickers,
   ProductID
 } from "./types";
-import { fiatIDs } from './constants';
 import { buildExchangeClient } from "./exchange-client-factory";
+import { getTradeableCurrencies } from './currency-functions';
 
 export const getAllocations = async (userID: UserID): Promise<Allocations> => {
   // TODO: Make a call to Firebase. Stubbed for now
@@ -40,7 +40,6 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
   p.fxToBaseCurrency = await getFxRatesTo(p.baseCurrency, tradeableCurrencies)
 
   const markets = await gdax.loadMarkets()
-  console.log(markets)
   Object.keys(markets).forEach((s: ExchangeSymbol) => {
     const m: ccxt.Market = markets[s]
     if (productHasAllocation(allocations, m.base as CurrencyID, m.quote as CurrencyID, p.baseCurrency)) {
@@ -86,11 +85,6 @@ export const getTickers = async (currencies: Array<CurrencyID>, baseCurrency: Cu
 
   return tickers
 }
-
-const getTradeableCurrencies = (a: Allocations): Array<CurrencyID> =>
-  Object.keys(a).filter((c: CurrencyID) => !isFiat(c)) as Array<CurrencyID>
-
-const isFiat = (c: CurrencyID) => fiatIDs.includes(c)
 
 // allocations contains the currency and it is denominated in the portfolio's base
 const productHasAllocation = (

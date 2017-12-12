@@ -7,7 +7,7 @@ import * as rebalancing from '../../src/rebalance-execution'
 import { Allocations, CurrencyID } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';
 
-describe("rebalancing", () => {
+describe("rebalance-execution unit tests", () => {
   describe("calculatePortfolioQuantityAdjustments", () => {
     describe("portfolio that needs rebalancing", () => {
       it("evenly split allocations", () => {
@@ -160,9 +160,6 @@ describe("rebalancing", () => {
         expect(buyOrder2).to.be.called
         done()
       })
-    })
-    it('should gracefully handle order execution errors', () => {
-      throw new Error('not implemented')
     })
   })
 })

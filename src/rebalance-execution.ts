@@ -8,6 +8,7 @@ import {
   Portfolio
 } from './types';
 import * as portfolioCalculators from './portfolio-calculators'
+import { getProductFrom } from './currency-functions'
 
 
 export type RebalanceExecution = {
@@ -27,7 +28,7 @@ export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdj
   }
   Object.keys(p.holdings).forEach((currencyID: CurrencyID) => {
     const adjustment = quantityAdjustments[currencyID]
-    const product = portfolioCalculators.getProductFrom(p, currencyID, p.baseCurrency)
+    const product = getProductFrom(p, currencyID, p.baseCurrency)
     if (adjustment < 0) {
       re.sellOrders.push(
         () => { return orderExecution.sellAtMarket(product.symbol, adjustment); }
