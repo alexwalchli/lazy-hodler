@@ -16,7 +16,7 @@ export type RebalanceExecution = {
   buyOrders: Array<() => Promise<Boolean>>
 }
 
-export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdjustments) => {
+export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdjustments, auth: UserExchangeAuthData, useLive: boolean = false) => {
   // IMPORTANT TODO: This should be smarter.
   // For example if we need more ETH and less BTC. We should just buy ETH with 
   // ETH/BTC(selling BTC for more ETH) instead of selling ETH to USD and then buying
@@ -31,11 +31,11 @@ export const createBuyAndSells = (p: Portfolio, quantityAdjustments: QuantityAdj
     const product = getProductFrom(p, currencyID, p.baseCurrency)
     if (adjustment < 0) {
       re.sellOrders.push(
-        () => { return orderExecution.sellAtMarket(product.symbol, adjustment); }
+        () => { return orderExecution.sellAtMarket(product.symbol, adjustment, auth, useLive); }
       );
     } else if (adjustment > 0) {
       re.buyOrders.push(
-        () => { return orderExecution.buyAtMarket(product.symbol, adjustment); }
+        () => { return orderExecution.buyAtMarket(product.symbol, adjustment, auth, useLive); }
       );
     }
   })
@@ -63,11 +63,11 @@ export const executeRebalance = async (re: RebalanceExecution): Promise<Boolean>
   return true
 }
 
-export const maybeRebalancePortfolio = async (exchangeAuthInfo: UserExchangeAuthData, allocations: Allocations) => {
+export const maybeRebalancePortfolio = async (auth: UserExchangeAuthData, allocations: Allocations, useLive: boolean = false) => {
   try {
-    const p = await portfolioService.getPortfolio(exchangeAuthInfo)
+    const p = await portfolioService.getPortfolio(auth)
     const quantityAdjustments = calculatePortfolioQuantityAdjustments(p, allocations)
-    const orders = createBuyAndSells(p, quantityAdjustments)
+    const orders = createBuyAndSells(p, quantityAdjustments, auth, useLive)
     const result = await executeRebalance(orders)
     return result
   } catch (error) {

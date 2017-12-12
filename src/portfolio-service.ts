@@ -16,9 +16,8 @@ export const getAllocations = async (userID: UserID): Promise<Allocations> => {
   // TODO: Make a call to Firebase. Stubbed for now
   return Promise.resolve({
     'BTC': .4,
-    'ETH': .3,
-    'USD': .2,
-    'LTC': .1,
+    'ETH': .4,
+    'USD': .2
   })
 }
 
