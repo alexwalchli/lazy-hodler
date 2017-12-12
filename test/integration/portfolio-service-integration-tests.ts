@@ -5,7 +5,7 @@ import { expect } from 'chai';
 describe('portfolio-service integrates with exchanges over HTTP', () => {
   describe('getPortfolio', () => {
     it('should retrieve portfolio data', async () => {
-      const p = await portfolioService.getPortfolio(exchangeAuthData.sandbox.gdax);
+      const p = await portfolioService.getPortfolio(exchangeAuthData.live.gdax, true);
 
       expect(p.baseCurrency).to.equal('USD', 'only supporting USD base at the moment')
       expect(p.quoteCurrency).to.equal('USD', 'only supporting USD quote at the moment')
@@ -34,6 +34,8 @@ describe('portfolio-service integrates with exchanges over HTTP', () => {
         expect(Number.isNaN(p.holdings[k].quantityAvailable)).to.be.false
       })
 
-    }).timeout(8000)
+      console.log(p)
+
+    }).timeout(10000)
   })
 })

@@ -42,14 +42,12 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
   const markets = await gdax.loadMarkets()
   Object.keys(markets).forEach((s: ExchangeSymbol) => {
     const m: ccxt.Market = markets[s]
-    if (productHasAllocation(allocations, m.base as CurrencyID, m.quote as CurrencyID, p.baseCurrency)) {
-      p.products[s] = {
-        id: m.id as ProductID,
-        base: m.base as CurrencyID,
-        quote: m.quote as CurrencyID,
-        symbol: m.symbol as ExchangeSymbol,
-        minimumOrderSize: m.info.base_min_size 
-      }
+    p.products[s] = {
+      id: m.id as ProductID,
+      base: m.base as CurrencyID,
+      quote: m.quote as CurrencyID,
+      symbol: m.symbol as ExchangeSymbol,
+      minimumOrderSize: m.info.base_min_size 
     }
   })
   
@@ -85,11 +83,3 @@ export const getTickers = async (currencies: Array<CurrencyID>, baseCurrency: Cu
 
   return tickers
 }
-
-// allocations contains the currency and it is denominated in the portfolio's base
-const productHasAllocation = (
-  a: Allocations,
-  productBaseCurrency: CurrencyID,
-  productQuoteCurrency: CurrencyID,
-  portfolioBaseCurrency: CurrencyID
-) => a[productBaseCurrency] && productQuoteCurrency === portfolioBaseCurrency
