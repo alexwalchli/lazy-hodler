@@ -11,18 +11,30 @@
   },
   "devDependencies": {
     "@types/sinon-chai": "^2.7.29",
+    "awesome-typescript-loader": "^3.4.1",
+    "chai": "^4.1.2",
+    "css-loader": "^0.28.7",
+    "file-loader": "^1.1.5",
     "mocha": "^4.0.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "sinon": "^4.1.2",
     "sinon-chai": "^2.14.0",
-    "chai": "^4.1.2",
+    "source-map-loader": "^0.2.3",
+    "style-loader": "^0.19.0",
     "ts-mocha": "^1.0.3",
     "ts-node": "^3.3.0",
-    "typescript-standard": "^0.3.30"
+    "typescript-standard": "^0.3.30",
+    "url-loader": "^0.6.2",
+    "webpack": "^3.10.0"
   },
   "scripts": {
+    "compile-bot": "tsc -p src/bot/tsconfig.json",
+    "compile-web": "tsc -p src/web/tsconfig.json && node_modules/.bin/webpack --config src/web/webpack.config.js",
+    "start-web": "npm run compile-web && node ./src/web/dev-server.js",
     "test": "ts-mocha test/**/*.ts --exit",
-    "integration": "ts-mocha test/integration/*.ts --exit",
-    "unit": "ts-mocha test/unit/*.ts --exit"
+    "integration": "TS_NODE_PROJECT=src/bot ts-mocha -p src/bot/tsconfig.json test/integration/*.ts --exit",
+    "unit": "TS_NODE_PROJECT=src/bot ts-mocha -p src/bot/tsconfig.json test/unit/*.ts --exit"
   },
   "author": "Alex Walchli",
   "license": "ISC"

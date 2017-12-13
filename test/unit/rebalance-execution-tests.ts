@@ -4,7 +4,7 @@ import {expect} from 'chai'
 
 import {RebalanceExecution, executeRebalance} from '../../src/bot/rebalance-execution'
 import * as rebalancing from '../../src/bot/rebalance-execution'
-import { Allocations, CurrencyID } from '../../src/types';
+import { Allocations, CurrencyID, UserExchangeAuthData } from '../../src/types';
 import { createMockPortfolio } from '../test-helpers';
 
 describe("rebalance-execution unit tests", () => {
@@ -114,7 +114,10 @@ describe("rebalance-execution unit tests", () => {
       }
     ]
     const p = createMockPortfolio('USD', 'USD', mockPositionInfo)
-  
+    const auth: UserExchangeAuthData = {
+      authInfo: {apiKey: '123', passphrase: '123', secret: '123'},
+      exchangeID: 'GDAX', userID: '123'
+    }
     const allocations: Allocations = {
       'BTC': 0.5,
       'LTC': 0.1,
@@ -122,7 +125,7 @@ describe("rebalance-execution unit tests", () => {
     }
 
     const adjustments = rebalancing.calculatePortfolioQuantityAdjustments(p, allocations)
-    const orders = rebalancing.createBuyAndSells(p, adjustments)
+    const orders = rebalancing.createBuyAndSells(p, adjustments, auth)
 
     it("should create sell orders for positions that are over its allocation", () => {
       expect(orders.sellOrders.length).to.be.equal(1)

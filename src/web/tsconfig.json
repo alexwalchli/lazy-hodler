@@ -1,20 +1,20 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es6",
-    "lib": ["es6", "es2016"],
+    "target": "es5",
+    "lib": ["es7", "dom"],
     "noImplicitAny": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "strictNullChecks": false,
     "experimentalDecorators": true,
-    "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true
+    "noEmit": true,
+    "declaration": true,
+    "jsx": "react"
   },
   "include": [
-    "src/*.ts"
+    "./*"
   ],
   "exclude": [
     "node_modules"
