@@ -14,7 +14,9 @@
     "awesome-typescript-loader": "^3.4.1",
     "chai": "^4.1.2",
     "css-loader": "^0.28.7",
+    "express": "^4.16.2",
     "file-loader": "^1.1.5",
+    "html-webpack-plugin": "^2.30.1",
     "mocha": "^4.0.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -31,7 +33,7 @@
   "scripts": {
     "compile-bot": "tsc -p src/bot/tsconfig.json",
     "compile-web": "tsc -p src/web/tsconfig.json && node_modules/.bin/webpack --config src/web/webpack.config.js",
-    "start-web": "npm run compile-web && node ./src/web/dev-server.js",
+    "web": "npm run compile-web && node ./src/web/dev-server.js",
     "test": "ts-mocha test/**/*.ts --exit",
     "integration": "TS_NODE_PROJECT=src/bot ts-mocha -p src/bot/tsconfig.json test/integration/*.ts --exit",
     "unit": "TS_NODE_PROJECT=src/bot ts-mocha -p src/bot/tsconfig.json test/unit/*.ts --exit"

@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
     entry: "./src/web/index.tsx",
@@ -20,7 +21,12 @@ module.exports = {
           jQuery: 'jquery',
           React: 'react',
           ReactDOM: 'react-dom'
-      })
+      }),
+      new HtmlWebpackPlugin({
+        hash: true,
+        template: "./src/web/index.ejs",
+        filename: "./index.html"
+      }),
     ],
 
     module: {

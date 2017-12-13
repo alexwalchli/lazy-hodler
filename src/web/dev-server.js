@@ -4,10 +4,10 @@ var express = require('express');
 var app = new express();
 var port = 3000;
 
-app.use("/", express.static(__dirname + '/build-web'));
+app.use("/", express.static(__dirname + '/../../_build-web'));
 
 app.get("/", function(req, res) {
-  res.sendFile(__dirname + '/build-web/index.html');
+  res.sendFile(__dirname + '/../../_build-web/index.html');
 });
 
 app.listen(port, function(error) {
