@@ -10,9 +10,12 @@
     "strictNullChecks": false,
     "experimentalDecorators": true,
     "noEmit": true,
-    "declaration": true,
+    "declaration": false,
     "jsx": "react"
   },
+  "files": [
+    "../../node_modules/firebase/index.d.ts"
+  ],
   "include": [
     "./*"
   ],
