@@ -27,6 +27,7 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
   const tradeableCurrencies = getTradeableCurrencies(allocations)
 
   const p: Portfolio = {
+    exchangeID: exchangeAuthInfo.exchangeID,
     baseCurrency: 'USD',
     quoteCurrency: 'USD',
     fxToBaseCurrency: {},
@@ -35,11 +36,12 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
     products: {}
   }
 
-  p.tickers = await getTickers(tradeableCurrencies, p.baseCurrency, gdax)
   p.fxToBaseCurrency = await getFxRatesTo(p.baseCurrency, tradeableCurrencies)
-
+  
   const markets = await gdax.loadMarkets()
+  const allExchangeSymbols = []
   Object.keys(markets).forEach((s: ExchangeSymbol) => {
+    allExchangeSymbols.push(s)
     const m: ccxt.Market = markets[s]
     p.products[s] = {
       id: m.id as ProductID,
@@ -58,7 +60,7 @@ export const getPortfolio = async (exchangeAuthInfo: UserExchangeAuthData, useLi
       quantityAvailable: available
     }
   })
-
+  console.log(p)
   return p
 }
 
@@ -68,17 +70,3 @@ export const getFxRatesTo = (baseCurrency: CurrencyID, currencies: Array<Currenc
     fxRates[c] = 1
     return fxRates 
   }, {})
-
-export const getTickers = async (currencies: Array<CurrencyID>, baseCurrency: CurrencyID, exchangeClient: ccxt.Exchange): Promise<ProductTickers> => {  
-  const tickers: ProductTickers = {}
-  for (const c of currencies) {
-    // TODO: Exchanges may be format symbols differently so this will have to change
-    // to support more exchanges 
-    const exchangeSymbol = `${c}/${baseCurrency}` 
-    // Some exchanges like GDAX don't support getting multiple tickers
-    const exchangeTicker = await exchangeClient.fetchTicker(exchangeSymbol)
-    tickers[c] = { currentPrice: exchangeTicker.last }
-  }
-
-  return tickers
-}
